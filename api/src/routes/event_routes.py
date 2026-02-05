@@ -9,10 +9,12 @@ public_bp = Blueprint('public_bp', __name__)
 
 # Handle OPTIONS preflight for event creation
 @event_bp.route('', methods=['OPTIONS'])
+@event_bp.route('/', methods=['OPTIONS'])
 def handle_options():
     return jsonify({}), 200
 
 @event_bp.route('', methods=['POST'], strict_slashes=False)
+@event_bp.route('/', methods=['POST'], strict_slashes=False)
 @token_required
 def create_event(current_user):
     try:
@@ -159,6 +161,7 @@ def get_event(event_id):
     except:
         return jsonify({"message": "Invalid event ID"}), 400
 
+@event_bp.route('', methods=['GET'], strict_slashes=False)
 @event_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_events():
     # Filter by query params

@@ -126,5 +126,11 @@ def debug_db():
         return {"error": str(e)}, 500
 
 
+@app.errorhandler(404)
+def handle_404(e):
+    # Log the exact path that failed
+    print(f"404 Error: {request.method} {request.path}")
+    return {"error": "not_found", "path": request.path, "message": "The requested URL was not found on the server."}, 404
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
