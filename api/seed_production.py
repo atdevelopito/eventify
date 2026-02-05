@@ -1,81 +1,105 @@
-from pymongo import MongoClient
 import os
-from datetime import datetime, timedelta
+import pymongo
 from dotenv import load_dotenv
-from bson.objectid import ObjectId
+from datetime import datetime, timedelta
+from bson import ObjectId
 
 load_dotenv()
 
-try:
-    client = MongoClient(os.getenv('MONGODB_URI'))
-    db = client.eventify
-    
-    # Remove existing 'Hello' or test events to start fresh
-    db.events.delete_many({})
-    print("Cleaned up old events.")
+MONGO_URI = os.getenv('MONGODB_URI')
+print(f"Connecting to: {MONGO_URI.split('@')[1] if '@' in MONGO_URI else 'LOCAL'}")
 
-    events = [
-        {
-            "title": "Robotics Championship 2026",
-            "description": "The ultimate battle of machines! Join the most prestigious robotics competition in the country.",
-            "date": "March 20, 2026",
-            "time": "10:00 AM",
-            "start_date": "2026-03-20",
-            "start_time": "10:00",
-            "end_date": "2026-03-20",
-            "end_time": "18:00",
-            "location": "ICT Tower, Agargaon",
-            "address": "ICT Tower, Agargaon, Dhaka",
-            "background_image_url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800",
-            "status": "published",
-            "is_featured": True,
-            "capacity": 200,
-            "category": "Tech",
-            "created_at": datetime.utcnow(),
-            "target_date": "2026-03-20T10:00:00Z"
-        },
-        {
-            "title": "Scientifica: Innovation Summit",
-            "description": "Where science meets the future. Explore groundbreaking research and innovative technologies.",
-            "date": "April 15, 2026",
-            "time": "09:00 AM",
-            "start_date": "2026-04-15",
-            "start_time": "09:00",
-            "end_date": "2026-04-16",
-            "end_time": "17:00",
-            "location": "Senate Bhaban, DU",
-            "address": "Dhaka University Senate Bhaban",
-            "background_image_url": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800",
-            "status": "published",
-            "is_featured": True,
-            "capacity": 300,
-            "category": "Tech",
-            "created_at": datetime.utcnow(),
-            "target_date": "2026-04-15T09:00:00Z"
-        },
-        {
-            "title": "Dhaka Food Festival",
-            "description": "A celebration of taste! Experience the best cuisines from across the city in one place.",
-            "date": "May 05, 2026",
-            "time": "12:00 PM",
-            "start_date": "2026-05-05",
-            "start_time": "12:00",
-            "end_date": "2026-05-05",
-            "end_time": "22:00",
-            "location": "Purbachal 300 Feet",
-            "address": "Purbachal, 300 Feet Road, Dhaka",
-            "background_image_url": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800",
-            "status": "published",
-            "is_featured": True,
-            "capacity": 1000,
-            "category": "Food & Drink",
-            "created_at": datetime.utcnow(),
-            "target_date": "2026-05-05T12:00:00Z"
-        }
-    ]
+client = pymongo.MongoClient(MONGO_URI)
+db = client.get_database('eventify')
 
-    result = db.events.insert_many(events)
-    print(f"Successfully seeded {len(result.inserted_ids)} featured events.")
+# FORCE CLEAR for debugging
+print("Clearing existing events...")
+db.events.delete_many({})
+print("Events cleared.")
 
-except Exception as e:
-    print(f"Error seeding events: {e}")
+print("Seeding database...")
+
+# Create Dummy User for Creator
+user_id = ObjectId()
+db.users.update_one(
+    {"email": "admin@eventify.fun"},
+    {"$set": {
+        "name": "Eventify Admin",
+        "email": "admin@eventify.fun",
+        "role": "admin",
+        "password_hash": "seeded_hash"
+    }},
+    upsert=True
+)
+admin_user = db.users.find_one({"email": "admin@eventify.fun"})
+user_id = admin_user['_id']
+
+events = [
+    {
+        "title": "Future of Robotics Summit",
+        "description": "Join leading experts to discuss the next generation of humanoid robots and AI integration.",
+        "date": "2024-12-15",
+        "time": "09:00",
+        "start_date": "2024-12-15",
+        "start_time": "09:00",
+        "end_date": "2024-12-15",
+        "end_time": "18:00",
+        "location": "Moscone Center, SF",
+        "address": "747 Howard St, San Francisco, CA 94103",
+        "category": "Tech",
+        "is_featured": True,
+        "status": "published",
+        "created_by": user_id,
+        "created_at": datetime.utcnow(),
+        "target_date": datetime.utcnow() + timedelta(days=30),
+        "background_image_url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1000",
+        "capacity": 500,
+        "price": 299
+    },
+    {
+        "title": "Neon City Music Festival",
+        "description": "A 3-day electronic music experience featuring top global DJs and immersive light shows.",
+        "date": "2024-11-20",
+        "time": "18:00",
+        "start_date": "2024-11-20",
+        "start_time": "18:00",
+        "end_date": "2024-11-23",
+        "end_time": "02:00",
+        "location": "Downtown Arena",
+        "address": "123 Neon Ave, Miami, FL",
+        "category": "Music",
+        "is_featured": True,
+        "status": "published",
+        "created_by": user_id,
+        "created_at": datetime.utcnow(),
+        "target_date": datetime.utcnow() + timedelta(days=10),
+        "background_image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1000",
+        "capacity": 5000,
+        "price": 150
+    },
+    {
+        "title": "Global Culinary Expo",
+        "description": "Taste dishes from over 50 countries and watch live cooking demonstrations by celebrity chefs.",
+        "date": "2025-01-10",
+        "time": "10:00",
+        "start_date": "2025-01-10",
+        "start_time": "10:00",
+        "end_date": "2025-01-12",
+        "end_time": "20:00",
+        "location": "Grand Convention Hall",
+        "address": "500 Culinary Blvd, Paris, France",
+        "category": "Food & Drink",
+        "is_featured": True,
+        "status": "published",
+        "created_by": user_id,
+        "created_at": datetime.utcnow(),
+        "target_date": datetime.utcnow() + timedelta(days=45),
+        "background_image_url": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1000",
+        "capacity": 2000,
+        "price": 45
+    }
+]
+
+db.events.insert_many(events)
+print(f"Successfully inserted {len(events)} events!")
+print("Done.")

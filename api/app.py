@@ -100,14 +100,7 @@ def log_request_info():
 
 @app.route("/")
 def home():
-    print("Printing available routes:")
-    for rule in app.url_map.iter_rules():
-        print(f"{rule}: {rule.methods}")
     return {"status": "ok", "message": "Eventify API is running"}
-
-@app.route("/api/ping")
-def ping():
-    return {"status": "ok", "message": "Pong"}, 200
 
 @app.route("/healthz")
 def healthz():
