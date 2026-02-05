@@ -176,10 +176,10 @@ def get_events():
         # Public feed only shows published events
         query['status'] = 'published'
 
-    is_featured = request.args.get('featured')
-    if is_featured == 'true':
-        query['is_featured'] = True
-
+    print(f"Query: {query}")
+    print(f"Database: {mongo.db.name}")
+    print(f"Collection: events")
+    
     cursor = mongo.db.events.find(query)
     
     # Sorting
