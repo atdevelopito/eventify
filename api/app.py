@@ -14,6 +14,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config.from_object(Config)
 
+print("Starting Eventify API...")
+print(f"MongoDB URI present: {bool(app.config.get('MONGO_URI'))}")
+
 # Initialize CORS with support for frontend origin and credentials
 # Allow all local network IPs and localhost
 CORS(app, 
