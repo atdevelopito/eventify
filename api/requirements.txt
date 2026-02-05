@@ -1,0 +1,16 @@
+
+flask
+flask-cors
+pymongo>=4.3
+python-dotenv
+pyjwt
+bcrypt
+dnspython
+email-validator
+requests
+flask-limiter
+flask-jwt-extended
+resend
+python-dateutil
+Pillow
+gunicorn

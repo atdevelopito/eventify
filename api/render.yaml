@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: eventify-backend
+    env: python
+    rootDirectory: api
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: RESEND_SMTP_HOST
+        sync: false
+      - key: RESEND_SMTP_PORT
+        value: 465
+      - key: RESEND_SMTP_USER
+        sync: false
+      - key: RESEND_SMTP_PASS
+        sync: false

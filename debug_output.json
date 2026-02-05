@@ -1,0 +1,240 @@
+[
+  {
+    "address": "Cox's Bazar Sea Beach",
+    "background_image_url": "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?w=1200&auto=format&fit=crop&q=80",
+    "capacity": 500,
+    "category": "Party",
+    "created_at": "Wed, 04 Feb 2026 21:16:14 GMT",
+    "created_by": "697b75bd9abcdd5885c6c282",
+    "creator_name": "linkon447",
+    "date": "March 02, 2026",
+    "description": "The ultimate summer vibe! Beach volleyball, BBQ, and live DJ sets all day long. Don't forget your sunscreen!",
+    "end_date": "2026-03-02T07:16:14.300308",
+    "end_time": "21:00",
+    "gallery_images": [
+      "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?w=1200&auto=format&fit=crop&q=80"
+    ],
+    "guests": [],
+    "id": "6983b71e74509c6397f85781",
+    "lineup": [
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 1",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 2",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 3",
+        "role": "Headliner"
+      }
+    ],
+    "location": "Cox's Bazar Sea Beach",
+    "location_type": "physical",
+    "start_date": "2026-03-02T03:16:14.300308",
+    "start_time": "17:00",
+    "status": "published",
+    "target_date": "2026-03-02T03:16:14.300308",
+    "tickets": [
+      {
+        "description": "Access to event area",
+        "id": "baa7d544-41a5-4bcc-bf88-94f6fb7c8b8f",
+        "name": "General Entry",
+        "price": 1500,
+        "quantity": 100,
+        "type": "paid"
+      }
+    ],
+    "time": "5:00 PM",
+    "timezone": "UTC+6",
+    "title": "Summer Beach Party"
+  },
+  {
+    "address": "Cox's Bazar Sea Beach",
+    "background_image_url": "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?w=1200&auto=format&fit=crop&q=80",
+    "capacity": 500,
+    "category": "Party",
+    "created_at": "Wed, 04 Feb 2026 20:02:50 GMT",
+    "created_by": "697b75bd9abcdd5885c6c282",
+    "creator_name": "linkon447",
+    "date": "March 02, 2026",
+    "description": "The ultimate summer vibe! Beach volleyball, BBQ, and live DJ sets all day long. Don't forget your sunscreen!",
+    "end_date": "2026-03-02T06:02:50.964575",
+    "end_time": "21:00",
+    "gallery_images": [
+      "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?w=1200&auto=format&fit=crop&q=80"
+    ],
+    "guests": [],
+    "id": "6983a5ead5c12169fa717f47",
+    "lineup": [
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 1",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 2",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 3",
+        "role": "Headliner"
+      }
+    ],
+    "location": "Cox's Bazar Sea Beach",
+    "location_type": "physical",
+    "start_date": "2026-03-02T02:02:50.964575",
+    "start_time": "17:00",
+    "status": "published",
+    "target_date": "2026-03-02T02:02:50.964575",
+    "tickets": [
+      {
+        "description": "Access to event area",
+        "id": "a7bbb780-d50d-40fa-b672-2bab42f0598b",
+        "name": "General Entry",
+        "price": 1500,
+        "quantity": 100,
+        "type": "paid"
+      }
+    ],
+    "time": "5:00 PM",
+    "timezone": "UTC+6",
+    "title": "Summer Beach Party"
+  },
+  {
+    "address": "North South University",
+    "background_image_url": "https://images.unsplash.com/photo-1504384308090-c54be3855833?w=1200&auto=format&fit=crop&q=80",
+    "capacity": 500,
+    "category": "Tech",
+    "created_at": "Wed, 04 Feb 2026 21:16:14 GMT",
+    "created_by": "697b75bd9abcdd5885c6c282",
+    "creator_name": "linkon447",
+    "date": "February 23, 2026",
+    "description": "48-hour coding marathon to build the next generation of AI solutions. Prizes worth 500,000 BDT. Food and drinks on the house.",
+    "end_date": "2026-02-23T07:16:14.300325",
+    "end_time": "21:00",
+    "gallery_images": [
+      "https://images.unsplash.com/photo-1504384308090-c54be3855833?w=1200&auto=format&fit=crop&q=80"
+    ],
+    "guests": [],
+    "id": "6983b71e74509c6397f85782",
+    "lineup": [],
+    "location": "North South University",
+    "location_type": "physical",
+    "start_date": "2026-02-23T03:16:14.300325",
+    "start_time": "17:00",
+    "status": "published",
+    "target_date": "2026-02-23T03:16:14.300325",
+    "tickets": [
+      {
+        "description": "Access to event area",
+        "id": "0b299de0-9643-4c0a-a4b8-4bb26186ee66",
+        "name": "General Entry",
+        "price": 500,
+        "quantity": 100,
+        "type": "paid"
+      }
+    ],
+    "time": "5:00 PM",
+    "timezone": "UTC+6",
+    "title": "AI & Robotics Hackathon"
+  },
+  {
+    "address": "North South University",
+    "background_image_url": "https://images.unsplash.com/photo-1504384308090-c54be3855833?w=1200&auto=format&fit=crop&q=80",
+    "capacity": 500,
+    "category": "Tech",
+    "created_at": "Wed, 04 Feb 2026 20:02:50 GMT",
+    "created_by": "697b75bd9abcdd5885c6c282",
+    "creator_name": "linkon447",
+    "date": "February 23, 2026",
+    "description": "48-hour coding marathon to build the next generation of AI solutions. Prizes worth 500,000 BDT. Food and drinks on the house.",
+    "end_date": "2026-02-23T06:02:50.964609",
+    "end_time": "21:00",
+    "gallery_images": [
+      "https://images.unsplash.com/photo-1504384308090-c54be3855833?w=1200&auto=format&fit=crop&q=80"
+    ],
+    "guests": [],
+    "id": "6983a5ead5c12169fa717f48",
+    "lineup": [],
+    "location": "North South University",
+    "location_type": "physical",
+    "start_date": "2026-02-23T02:02:50.964609",
+    "start_time": "17:00",
+    "status": "published",
+    "target_date": "2026-02-23T02:02:50.964609",
+    "tickets": [
+      {
+        "description": "Access to event area",
+        "id": "55228173-32e2-440b-9b6a-39fbfd7b2a4f",
+        "name": "General Entry",
+        "price": 500,
+        "quantity": 100,
+        "type": "paid"
+      }
+    ],
+    "time": "5:00 PM",
+    "timezone": "UTC+6",
+    "title": "AI & Robotics Hackathon"
+  },
+  {
+    "address": "Amari Dhaka, Deck 41",
+    "background_image_url": "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=1200&auto=format&fit=crop&q=80",
+    "capacity": 500,
+    "category": "Music",
+    "created_at": "Wed, 04 Feb 2026 21:16:14 GMT",
+    "created_by": "697b75bd9abcdd5885c6c282",
+    "creator_name": "linkon447",
+    "date": "February 17, 2026",
+    "description": "An intimate evening of smooth jazz and signature cocktails under the stars. Featuring the Blue Note Quartet.",
+    "end_date": "2026-02-17T07:16:14.300277",
+    "end_time": "21:00",
+    "gallery_images": [
+      "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=1200&auto=format&fit=crop&q=80"
+    ],
+    "guests": [],
+    "id": "6983b71e74509c6397f85780",
+    "lineup": [
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 1",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 2",
+        "role": "Headliner"
+      },
+      {
+        "image": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+        "name": "Artist 3",
+        "role": "Headliner"
+      }
+    ],
+    "location": "Amari Dhaka, Deck 41",
+    "location_type": "physical",
+    "start_date": "2026-02-17T03:16:14.300277",
+    "start_time": "17:00",
+    "status": "published",
+    "target_date": "2026-02-17T03:16:14.300277",
+    "tickets": [
+      {
+        "description": "Access to event area",
+        "id": "29df4955-dd64-46b8-aeba-efacacf72235",
+        "name": "General Entry",
+        "price": 3000,
+        "quantity": 100,
+        "type": "paid"
+      }
+    ],
+    "time": "5:00 PM",
+    "timezone": "UTC+6",
+    "title": "Rooftop Jazz & Cocktails"
+  }
+]

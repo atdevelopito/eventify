@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test</h1>
+    <button onclick="testCORS()">Test Backend Connection</button>
+    <div id="result"></div>
+
+    <script>
+        async function testCORS() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <h2 style="color: green;">✅ SUCCESS!</h2>
+                    <p>Backend Response: ${JSON.stringify(data)}</p>
+                    <p>CORS is working correctly!</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h2 style="color: red;">❌ FAILED</h2>
+                    <p>Error: ${error.message}</p>
+                    <p>CORS might still be cached. Try:</p>
+                    <ol>
+                        <li>Press Ctrl+Shift+Delete</li>
+                        <li>Clear cached images and files</li>
+                        <li>Click the button again</li>
+                    </ol>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

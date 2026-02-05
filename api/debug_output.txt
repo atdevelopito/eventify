@@ -1,0 +1,98 @@
+Found 16 events.
+----------------------------------------
+Title: SCIENTIFICA, Dhaka’s premier convergence of scientific inquiry
+ID: 6982325df383f8b44f96a8de
+Created By: tashinkan360@gmail.com (ID: 6980e83e1f8033e2a8621bc8)
+Created At: 2026-02-03 17:37:33.279000
+Image: /uploads/events/1769273750017_667970f0.webp
+--------------------
+Title: Biznix, the convergence point for the world's most ambitious minds.
+ID: 69823b9be7f09b2e410eade2
+Created By: brnnddot@gmail.com (ID: 698236ae9c0607287b3ad72e)
+Created At: 2026-02-03 18:16:59.732000
+Image: /uploads/events/file_000000005f487206b7c4b48cb9f5e0c0_538437c4.webp
+--------------------
+Title: Ink & Intellect
+ID: 6982741f346b678da85f270a
+Created By: tashinkan360@gmail.com (ID: 6980e83e1f8033e2a8621bc8)
+Created At: 2026-02-03 22:18:07.477000
+Image: /uploads/events/1769276513898_05918f15.webp
+--------------------
+Title: Melody Nights
+ID: 698274c3346b678da85f270b
+Created By: tashinkan360@gmail.com (ID: 6980e83e1f8033e2a8621bc8)
+Created At: 2026-02-03 22:20:51.325000
+Image: /uploads/events/1769276987187_1_d52f27f7.webp
+--------------------
+Title: THE CHARITY MARATHON EVENT
+ID: 69827526346b678da85f270c
+Created By: tashinkan360@gmail.com (ID: 6980e83e1f8033e2a8621bc8)
+Created At: 2026-02-03 22:22:30.389000
+Image: /uploads/events/Yellow_Blue_Bold_Illustrative_Marathon_Event_Landscape_Banner_20260125_000508_0000_dba4dbae.webp
+--------------------
+Title: THE MAGIC AT CREATIVA SEASON 1
+ID: 69827588346b678da85f270d
+Created By: tashinkan360@gmail.com (ID: 6980e83e1f8033e2a8621bc8)
+Created At: 2026-02-03 22:24:08.756000
+Image: /uploads/events/1769278756038_00a1f368.webp
+--------------------
+Title: Global Startup Pitch Night
+ID: 6983a5ead5c12169fa717f44
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 20:02:50.963000
+Image: None
+--------------------
+Title: Sunrise Yoga & Meditation
+ID: 6983a5ead5c12169fa717f45
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 20:02:50.964000
+Image: None
+--------------------
+Title: Rooftop Jazz & Cocktails
+ID: 6983a5ead5c12169fa717f46
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 20:02:50.964000
+Image: None
+--------------------
+Title: Summer Beach Party
+ID: 6983a5ead5c12169fa717f47
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 20:02:50.964000
+Image: None
+--------------------
+Title: AI & Robotics Hackathon
+ID: 6983a5ead5c12169fa717f48
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 20:02:50.964000
+Image: None
+--------------------
+Title: Global Startup Pitch Night
+ID: 6983b71e74509c6397f8577e
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 21:16:14.298000
+Image: None
+--------------------
+Title: Sunrise Yoga & Meditation
+ID: 6983b71e74509c6397f8577f
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 21:16:14.300000
+Image: None
+--------------------
+Title: Rooftop Jazz & Cocktails
+ID: 6983b71e74509c6397f85780
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 21:16:14.300000
+Image: None
+--------------------
+Title: Summer Beach Party
+ID: 6983b71e74509c6397f85781
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 21:16:14.300000
+Image: None
+--------------------
+Title: AI & Robotics Hackathon
+ID: 6983b71e74509c6397f85782
+Created By: linkonn447@gmail.com (ID: 697b75bd9abcdd5885c6c282)
+Created At: 2026-02-04 21:16:14.300000
+Image: None
+--------------------
