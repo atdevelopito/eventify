@@ -94,6 +94,10 @@ def uploaded_file(filename):
     uploads_dir = os.path.join(os.path.dirname(__file__), 'uploads')
     return send_from_directory(uploads_dir, filename)
 
+@app.before_request
+def log_request_info():
+    print(f"Request: {request.method} {request.path}")
+
 @app.route("/")
 def home():
     return {"status": "ok", "message": "Eventify API is running"}
