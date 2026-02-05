@@ -1,6 +1,6 @@
 
 
-from flask import Flask
+from flask import Flask, request
 from src.config import Config
 from src.database import mongo
 from src.routes.auth_routes import auth_bp
