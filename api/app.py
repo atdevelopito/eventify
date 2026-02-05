@@ -106,6 +106,25 @@ def home():
 def healthz():
     return {"status": "ok"}, 200
 
+@app.route("/debug/db")
+def debug_db():
+    try:
+        db_name = mongo.db.name
+        collections = mongo.db.list_collection_names()
+        event_count = mongo.db.events.count_documents({})
+        featured_count = mongo.db.events.count_documents({"is_featured": True})
+        published_count = mongo.db.events.count_documents({"status": "published"})
+        return {
+            "db_name": db_name,
+            "collections": collections,
+            "event_count": event_count,
+            "featured_count": featured_count,
+            "published_count": published_count,
+            "uri_masked": "present" if app.config.get('MONGO_URI') else "missing"
+        }
+    except Exception as e:
+        return {"error": str(e)}, 500
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
