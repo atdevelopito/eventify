@@ -1,7 +1,7 @@
 
 flask
 flask-cors
-pymongo>=4.3
+pymongo[srv]>=4.3
 python-dotenv
 pyjwt
 bcrypt
