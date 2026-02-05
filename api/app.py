@@ -95,6 +95,10 @@ def uploaded_file(filename):
 def home():
     return {"status": "ok", "message": "Eventify API is running"}
 
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}, 200
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
