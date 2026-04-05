@@ -74,7 +74,7 @@ csp = {
     'script-src': ['\'self\'', '\'unsafe-inline\''],
     'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
     'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
-    'connect-src': ['\'self\'', 'https://api.eventify.fun', 'http://localhost:5000']
+    'connect-src': ['\'self\'', 'https://api.eventify.fun', 'https://eventify-backend-1-iave.onrender.com', 'http://localhost:5000']
 }
 
 talisman = Talisman(
@@ -94,7 +94,8 @@ celery = make_celery(app)
 whitelist = [
     "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176",
     "https://eventify.fun", "https://organizer.eventify.fun", "https://admin.eventify.fun",
-    "https://eventifybangladesh.netlify.app", "https://eventify-organizer.netlify.app"
+    "https://eventifybangladesh.netlify.app", "https://eventify-organizer.netlify.app",
+    "https://eventify-backend-1-iave.onrender.com"
 ]
 CORS(app, 
      origins=whitelist,

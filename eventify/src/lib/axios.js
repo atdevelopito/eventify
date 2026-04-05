@@ -2,11 +2,19 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
+    // If a specific backend URL is defined in .env, use it (highest priority)
+    const envUrl = import.meta.env.VITE_BACKEND_URL;
+    if (envUrl && !envUrl.includes('localhost')) {
+        return `${envUrl}/api`;
+    }
+
     const hostname = window.location.hostname;
+    // If running on localhost, use local port 5000
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://localhost:5000/api';
     }
-    // If we're on a public domain without a configured proxy, this helps
+    
+    // Default fallback
     return '/api';
 };
 
