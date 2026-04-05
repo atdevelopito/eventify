@@ -1,4 +1,4 @@
-
+import os
 import resend
 from src.config import Config
 
@@ -8,10 +8,13 @@ class EmailService:
         resend.api_key = Config.RESEND_SMTP_PASS # The password field usually holds the API key for Resend
 
         try:
-            print(f"Attempting to send email to {to_email} via Resend SDK...")
+            print(f"DEBUG: Attempting to send email to {to_email} via Resend SDK...")
             
-            # Try primary domain first
-            sender = "Eventify <noreply@eventify.fun>"
+            # Primary domain (requires verification in Resend)
+            sender = os.getenv('MAIL_DEFAULT_SENDER', "Eventify <onboarding@resend.dev>")
+            
+            # If we are using a verified domain, we can use a custom name
+            # But Resend default test is onboarding@resend.dev
             
             params = {
                 "from": sender,
@@ -20,20 +23,13 @@ class EmailService:
                 "html": body,
             }
 
-            # Development logging
-            print("\n" + "="*50)
-            print(f"EMAIL TO: {to_email}")
-            print(f"SUBJECT: {subject}")
-            print(f"BODY:\n{body}")
-            print("="*50 + "\n")
-
+            print(f"DEBUG: Sending from: {sender}")
             email = resend.Emails.send(params)
-            print(f"Email sent successfully: {email}")
+            print(f"DEBUG: Email success response: {email}")
             return True
         except Exception as e:
-            print(f"Failed to send email to {to_email}: {str(e)}")
-            # Fallback/Retry logic could go here if we wanted to try another domain
-            # But let's stick to the requested one.
+            print(f"ERROR [EmailService]: Failed to send to {to_email}")
+            print(f"ERROR MESSAGE: {str(e)}")
             return False
 
     @staticmethod
