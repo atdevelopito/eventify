@@ -1,8 +1,17 @@
 
 import axios from 'axios';
 
+const getBaseUrl = () => {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5000/api';
+    }
+    // If we're on a public domain without a configured proxy, this helps
+    return '/api';
+};
+
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: getBaseUrl(),
     headers: {
         'Content-Type': 'application/json',
     },
