@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader, Card } from "@/components/organizer/shared";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Clock, MapPin } from "lucide-react";
@@ -82,11 +83,11 @@ export function CalendarsPage() {
         const isFuture = isAfter(event.date, today);
 
         if (isOngoing) {
-            return "bg-[#E85A6B]/10 text-[#E85A6B] border border-[#E85A6B]/20 animate-pulse";
+            return "bg-[#E85A6B] text-white ring-1 ring-[#E85A6B]/50 animate-pulse font-bold";
         } else if (isFuture) {
-            return "bg-black/5 text-black border border-black/10 hover:bg-black/10";
+            return "bg-black text-white hover:bg-gray-800 transition-colors font-bold";
         } else {
-            return "bg-gray-100 text-gray-500 border border-gray-200 line-through decoration-gray-400";
+            return "bg-gray-50 text-gray-400 border border-gray-100 line-through decoration-gray-300 font-medium";
         }
     };
 
@@ -101,175 +102,165 @@ export function CalendarsPage() {
     }
 
     return (
-        <div className="space-y-6 min-h-screen bg-white">
-            <PageHeader
-                title="Calendar"
-                description="Manage your event schedule"
-                action={{
-                    label: "Create Event",
-                    onClick: () => navigate("/organizer/events/create"),
-                    icon: "plus",
-                }}
-            />
+        <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-8 min-h-screen bg-[#F8F9FA] pb-12"
+        >
+            <div className="px-4 md:px-8 pt-8">
+                <PageHeader
+                    title="Calendar"
+                    description="Manage your event schedule across the month"
+                    action={{
+                        label: "Create Event",
+                        onClick: () => navigate("/organizer/events/create"),
+                        icon: "plus",
+                    }}
+                />
+            </div>
 
-            <Card padding="none" className="border-black/5 shadow-sm overflow-hidden">
-                {/* Calendar Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                    <div className="flex items-center gap-6">
-                        <h2 className="text-2xl font-semibold text-black tracking-tight">
-                            {format(currentMonth, "MMMM yyyy")}
-                        </h2>
-                        <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-1 border border-gray-200">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                                className="h-8 w-8 hover:bg-white hover:shadow-sm"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setCurrentMonth(new Date())}
-                                className="h-8 text-xs font-medium hover:bg-white hover:shadow-sm px-3"
-                            >
-                                Today
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                                className="h-8 w-8 hover:bg-white hover:shadow-sm"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </Button>
+            <div className="px-4 md:px-8 max-w-[1600px] mx-auto space-y-8">
+                {/* Minimalist Calendar Block */}
+                <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                    {/* Calendar Header */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-8 border-b border-gray-100 bg-white">
+                        <div className="flex items-center gap-6">
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                                {format(currentMonth, "MMMM yyyy")}
+                            </h2>
+                            <div className="flex items-center gap-1 bg-[#F8F9FA] rounded-xl p-1 border border-gray-100">
+                                <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="h-10 w-10 hover:bg-white rounded-lg transition-colors">
+                                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={() => setCurrentMonth(new Date())} className="h-10 text-sm font-bold text-gray-700 hover:bg-white hover:text-black rounded-lg px-4 transition-colors">
+                                    Today
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="h-10 w-10 hover:bg-white rounded-lg transition-colors">
+                                    <ChevronRight className="w-5 h-5 text-gray-600" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Calendar Grid */}
-                <div className="p-6">
-                    {/* Week Day Headers */}
-                    <div className="grid grid-cols-7 gap-1 mb-4">
-                        {weekDays.map((day) => (
-                            <div
-                                key={day}
-                                className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest py-2"
-                            >
-                                {day}
-                            </div>
-                        ))}
-                    </div>
+                    {/* Calendar Grid */}
+                    <div className="p-8 bg-white">
+                        {/* Week Day Headers */}
+                        <div className="grid grid-cols-7 mb-6">
+                            {weekDays.map((day) => (
+                                <div key={day} className="text-center text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] py-2">
+                                    {day}
+                                </div>
+                            ))}
+                        </div>
 
-                    {/* Days Grid */}
-                    <div className="grid grid-cols-7 gap-px bg-gray-100 border border-gray-100 rounded-xl overflow-hidden shadow-inner">
-                        {/* Empty cells for padding */}
-                        {Array.from({ length: startPadding }).map((_, i) => (
-                            <div key={`pad-${i}`} className="min-h-32 bg-gray-50/50" />
-                        ))}
+                        {/* Days Grid */}
+                        <div className="grid grid-cols-7 gap-[1px] bg-gray-100 border border-gray-100 rounded-3xl overflow-hidden ring-1 ring-gray-100">
+                            {/* Empty cells for padding */}
+                            {Array.from({ length: startPadding }).map((_, i) => (
+                                <div key={`pad-${i}`} className="min-h-[160px] bg-[#F8F9FA]/50" />
+                            ))}
 
-                        {days.map((day) => {
-                            const dayEvents = getEventsForDay(day);
-                            const isToday = isSameDay(day, today);
-                            const isCurrentMonth = isSameMonth(day, currentMonth);
+                            {days.map((day) => {
+                                const dayEvents = getEventsForDay(day);
+                                const isToday = isSameDay(day, today);
+                                const isCurrentMonth = isSameMonth(day, currentMonth);
 
-                            return (
-                                <div
-                                    key={day.toISOString()}
-                                    className={cn(
-                                        "min-h-32 p-3 bg-white transition-colors relative group",
-                                        !isCurrentMonth && "bg-gray-50/30 text-gray-400",
-                                        isToday && "bg-[#E85A6B]/5"
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "text-sm mb-2 w-7 h-7 flex items-center justify-center rounded-full font-medium transition-colors",
-                                        isToday
-                                            ? "bg-[#E85A6B] text-white shadow-md shadow-[#E85A6B]/20"
-                                            : "text-gray-700 group-hover:bg-gray-100"
-                                    )}>
-                                        {format(day, "d")}
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        {dayEvents.slice(0, 3).map((event) => (
-                                            <div
-                                                key={event.id}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/organizer/events/${event.id}`);
-                                                }}
-                                                className={cn(
-                                                    "text-[10px] px-2 py-1 rounded-md cursor-pointer truncate font-medium transition-all shadow-sm",
-                                                    getEventStyle(event)
-                                                )}
-                                                title={event.title}
-                                            >
-                                                {event.title}
-                                            </div>
-                                        ))}
-                                        {dayEvents.length > 3 && (
-                                            <div className="text-[10px] text-gray-400 px-1 font-medium hover:text-[#E85A6B] cursor-pointer">
-                                                +{dayEvents.length - 3} more
-                                            </div>
+                                return (
+                                    <div
+                                        key={day.toISOString()}
+                                        className={cn(
+                                            "min-h-[160px] p-2 bg-white hover:bg-gray-50/50 transition-colors relative group",
+                                            !isCurrentMonth && "bg-[#F8F9FA]/50 text-gray-400 opacity-50",
+                                            isToday && "bg-[#E85A6B]/[0.02]"
                                         )}
+                                    >
+                                        <div className={cn(
+                                            "text-xs mb-3 w-8 h-8 flex items-center justify-center rounded-full font-bold transition-all ml-1 mt-1",
+                                            isToday
+                                                ? "bg-[#E85A6B] text-white scale-110"
+                                                : "text-gray-900 group-hover:bg-gray-100"
+                                        )}>
+                                            {format(day, "d")}
+                                        </div>
+                                        <div className="space-y-1.5 px-1 pb-2">
+                                            {dayEvents.slice(0, 3).map((event) => (
+                                                <div
+                                                    key={event.id}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/organizer/events/${event.id}`);
+                                                    }}
+                                                    className={cn(
+                                                        "text-[10px] px-2.5 py-1.5 rounded-lg cursor-pointer truncate font-medium transition-all group/event",
+                                                        getEventStyle(event)
+                                                    )}
+                                                    title={event.title}
+                                                >
+                                                    <span className="group-hover/event:opacity-100">{event.title}</span>
+                                                </div>
+                                            ))}
+                                            {dayEvents.length > 3 && (
+                                                <div className="text-[10px] text-gray-500 px-2 font-bold hover:text-[#E85A6B] cursor-pointer mt-1">
+                                                    +{dayEvents.length - 3} more
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
-            </Card>
 
-            {/* Upcoming Events List */}
-            <Card title="Upcoming This Month" className="border-black/5 shadow-sm">
-                <div className="space-y-2">
-                    {events
-                        .filter(e => isSameMonth(e.date, currentMonth) && isAfter(e.date, today))
-                        .sort((a, b) => a.date.getTime() - b.date.getTime())
-                        .slice(0, 5)
-                        .map((event) => (
-                            <div
-                                key={event.id}
-                                onClick={() => navigate(`/organizer/events/${event.id}`)}
-                                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 cursor-pointer transition-all border border-transparent hover:border-gray-100 group"
-                            >
-                                <div className="w-14 h-14 rounded-xl bg-black/5 flex flex-col items-center justify-center group-hover:bg-[#E85A6B] group-hover:text-white transition-colors">
-                                    <span className="text-xs font-bold uppercase opacity-60">
-                                        {format(event.date, "MMM")}
-                                    </span>
-                                    <span className="text-xl font-bold">
-                                        {format(event.date, "d")}
-                                    </span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-gray-900 truncate group-hover:text-[#E85A6B] transition-colors">{event.title}</h4>
-                                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 font-medium">
-                                        <span className="flex items-center gap-1.5">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            {format(event.date, "h:mm a")}
+                {/* Upcoming Events List */}
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6 tracking-tight">Upcoming This Month</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {events
+                            .filter(e => isSameMonth(e.date, currentMonth) && isAfter(e.date, today))
+                            .sort((a, b) => a.date.getTime() - b.date.getTime())
+                            .slice(0, 6)
+                            .map((event) => (
+                                <div
+                                    key={event.id}
+                                    onClick={() => navigate(`/organizer/events/${event.id}`)}
+                                    className="flex items-start gap-4 p-5 rounded-2xl hover:bg-gray-50 cursor-pointer transition-all border border-gray-100 hover:border-gray-300 group"
+                                >
+                                    <div className="w-16 h-16 rounded-2xl bg-black flex flex-col items-center justify-center text-white shrink-0 shadow-sm group-hover:-translate-y-1 transition-transform">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#E85A6B]">
+                                            {format(event.date, "MMM")}
                                         </span>
-                                        <span className="flex items-center gap-1.5">
-                                            <MapPin className="w-3.5 h-3.5" />
-                                            {event.location}
+                                        <span className="text-2xl font-black leading-none mt-0.5">
+                                            {format(event.date, "d")}
                                         </span>
                                     </div>
+                                    <div className="flex-1 min-w-0 pt-1">
+                                        <h4 className="font-bold text-gray-900 truncate text-base group-hover:text-[#E85A6B] transition-colors">{event.title}</h4>
+                                        <div className="flex flex-col gap-1.5 mt-2 text-xs text-gray-500 font-medium">
+                                            <span className="flex items-center gap-2">
+                                                <Clock className="w-3.5 h-3.5 text-gray-400" />
+                                                {format(event.date, "h:mm a")}
+                                            </span>
+                                            <span className="flex items-center gap-2 truncate">
+                                                <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                <span className="truncate">{event.location}</span>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-xs font-semibold px-3 py-1 bg-black/5 rounded-full text-black">
-                                    {event.registrations} <span className="font-normal text-gray-500">sold</span>
-                                </div>
+                            ))}
+                        {events.filter(e => isSameMonth(e.date, currentMonth) && isAfter(e.date, today)).length === 0 && (
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 border-2 border-dashed border-gray-100 rounded-3xl bg-[#F8F9FA]">
+                                <p className="text-gray-500 font-bold mb-2">Your calendar is clear</p>
+                                <p className="text-gray-400 text-sm mb-6">There are no upcoming events scheduled for this month.</p>
+                                <Button onClick={() => navigate("/organizer/events/create")} className="bg-black hover:bg-[#E85A6B] text-white font-bold h-12 px-8 rounded-xl transition-all">
+                                    Schedule New Event
+                                </Button>
                             </div>
-                        ))}
-                    {events.filter(e => isSameMonth(e.date, currentMonth) && isAfter(e.date, today)).length === 0 && (
-                        <div className="text-center py-10 border-2 border-dashed border-gray-100 rounded-xl">
-                            <p className="text-gray-400 font-medium text-sm">No upcoming events scheduled for {format(currentMonth, 'MMMM')}</p>
-                            <Button variant="link" onClick={() => navigate("/organizer/events/create")} className="text-[#E85A6B] text-xs font-bold mt-1">
-                                Schedule Event
-                            </Button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </Card>
-        </div>
+            </div>
+        </motion.div>
     );
 }

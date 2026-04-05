@@ -73,3 +73,42 @@ class AIService:
         """Recommend event categories or themes based on user interests."""
         prompt = f"Based on the following interests: {', '.join(interests)}, suggest 3 specific types of events or themes that would be popular on our platform. Output only the 3 suggestions as a list."
         return cls._call_openrouter(prompt)
+
+    @classmethod
+    def parse_event_prompt(cls, user_prompt):
+        """Parse an open-ended event description into a structured JSON for automatic form filling."""
+        prompt = f"""
+        Extract event details from the prompt and output ONLY a valid JSON object. No markdown tags, no extra text.
+        JSON schema:
+        {{
+            "title": string,
+            "description": string (expand on the prompt to make an exciting description),
+            "category": string (e.g. Technology, Music, Education),
+            "capacity": number,
+            "city": string,
+            "venue": string,
+            "tickets": [
+                {{"name": string, "price": number (0 if free), "quantity": number (default 50)}}
+            ]
+        }}
+        User prompt: "{user_prompt}"
+        """
+        result, error = cls._call_openrouter(prompt)
+        if error:
+            return None, error
+            
+        import re
+        import json
+        clean_json = result.strip()
+        # Clean markdown code blocks if the AI decided to be helpful
+        match = re.search(r'```(?:json)?\n(.*?)\n```', clean_json, re.DOTALL)
+        if match:
+            clean_json = match.group(1)
+        clean_json = clean_json.strip('`').strip()
+        
+        try:
+            parsed = json.loads(clean_json)
+            return parsed, None
+        except Exception as e:
+            print(f"[AI] Failed to parse JSON: {e}\\nRaw output: {result}")
+            return None, "Failed to parse AI response into structured data."

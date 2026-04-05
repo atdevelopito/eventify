@@ -58,3 +58,26 @@ def get_user_recommendations(current_user):
         "suggestions": suggestions,
         "interests_analyzed": interests
     }), 200
+
+@ai_bp.route('/parse-event', methods=['POST'])
+@token_required
+@limiter.limit("5 per minute")
+def parse_event(current_user):
+    """
+    Endpoint for organizers to generate a full event schema from a prompt.
+    Body: { "prompt": "..." }
+    """
+    data = request.get_json()
+    prompt = data.get('prompt')
+    
+    if not prompt:
+        return jsonify({"message": "Prompt is required."}), 400
+        
+    result, error = AIService.parse_event_prompt(prompt)
+    if error:
+        return jsonify({"message": error}), 500
+        
+    return jsonify({
+        "event_data": result,
+        "model": "OpenRouter-Mistral-Free"
+    }), 200

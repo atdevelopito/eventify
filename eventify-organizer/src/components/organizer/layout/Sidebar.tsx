@@ -47,7 +47,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     return (
         <motion.aside
             className={cn(
-                "h-screen sticky top-0 bg-white border-r border-gray-200 flex flex-col z-40",
+                "h-screen sticky top-0 bg-white border-r border-gray-200 hidden md:flex flex-col z-40",
                 "transition-all duration-300 ease-in-out",
                 // Mobile: fixed overlay, hidden by default
                 "fixed md:sticky",

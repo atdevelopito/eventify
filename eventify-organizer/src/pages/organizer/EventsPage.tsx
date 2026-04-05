@@ -35,8 +35,10 @@ export function EventsPage() {
 
     const fetchEvents = async () => {
         if (!user) return;
+        
         try {
             const response = await api.get('/organizer/events');
+            
             const mappedEvents = response.data.map((e: any) => ({
                 ...e,
                 date: safeDate(e.date || e.start_date),
@@ -47,7 +49,7 @@ export function EventsPage() {
                 capacity: e.capacity || 100
             }));
             setEvents(mappedEvents);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to fetch events", error);
         } finally {
             setLoading(false);

@@ -35,13 +35,15 @@ import {
     GripVertical,
     Trash2,
     Tag,
-    Loader2
+    Loader2,
+    Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { eventCategories, timezones } from "@/lib/mock-data";
 import { toast } from "sonner";
 import { Card } from "@/components/organizer/shared";
 import api from "@/lib/axios";
+import { AdvancedChatInput } from "@/components/ui/advanced-ai-chat-input";
 
 // Types
 interface TicketType {
@@ -96,6 +98,12 @@ export function CreateEventPage() {
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoadingEvent, setIsLoadingEvent] = useState(false);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+    
+    // AI Chatbox State
+    const [creationMode, setCreationMode] = useState<"manual" | "ai">("manual");
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [isParsingAI, setIsParsingAI] = useState(false);
 
     // Data Loading
     const [forms, setForms] = useState<any[]>([]);
@@ -251,6 +259,29 @@ export function CreateEventPage() {
         };
         fetchForms();
     }, []);
+
+    const generateDescriptionAI = async () => {
+        if (!title || !category) {
+            toast.error("Please enter a title and select a category first.");
+            return;
+        }
+        setIsGeneratingAI(true);
+        try {
+            const res = await api.post('/ai/generate-description', {
+                title,
+                category,
+                details: "Make it sound exciting, professional, and highlight the value for attendees."
+            });
+            if (res.data.description) {
+                setDescription(res.data.description);
+                toast.success("AI generated a description!");
+            }
+        } catch (error) {
+            toast.error("Failed to generate description with AI");
+        } finally {
+            setIsGeneratingAI(false);
+        }
+    };
 
     // Tag handling
     const addTag = () => {
@@ -435,6 +466,48 @@ export function CreateEventPage() {
     const handleSubmit = () => submitEvent('published');
     const handleSaveDraft = () => submitEvent('draft');
 
+    const handleProcessAIPrompt = async () => {
+        setIsParsingAI(true);
+        try {
+            const res = await api.post('/ai/parse-event', { prompt: aiPrompt });
+            const data = res.data?.event_data;
+            if (data) {
+                if (data.title) setTitle(data.title);
+                if (data.description) setDescription(data.description);
+                if (data.category) setCategory(data.category);
+                if (data.capacity) setCapacity(data.capacity.toString());
+                if (data.city) setCity(data.city);
+                if (data.venue) setVenue(data.venue);
+                
+                if (data.tickets && Array.isArray(data.tickets) && data.tickets.length > 0) {
+                    const newTickets = data.tickets.map((t: any, i: number) => ({
+                        id: Date.now().toString() + i,
+                        name: t.name || 'General Admission',
+                        description: "",
+                        price: t.price || 0,
+                        quantity: t.quantity || 50,
+                        minPerOrder: 1,
+                        maxPerOrder: 10,
+                        visibility: "public",
+                        formId: "none"
+                    }));
+                    setTickets(newTickets);
+                }
+                
+                toast.success("AI auto-filled your event details! Review and edit them.");
+                setCreationMode("manual");
+                setStep(1);
+                setAiPrompt("");
+            } else {
+                toast.error("AI couldn't understand the prompt.");
+            }
+        } catch(error) {
+            toast.error("Failed to parse event with AI");
+        } finally {
+            setIsParsingAI(false);
+        }
+    };
+
     if (isLoadingEvent) {
         return (
             <div className="flex h-96 items-center justify-center">
@@ -443,30 +516,110 @@ export function CreateEventPage() {
         );
     }
 
-    return (
-        <div className="max-w-5xl mx-auto pb-20">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                    <Button variant="ghost" onClick={() => navigate("/organizer/events")}>
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Events
+    const headerBlock = (
+        <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+                <Button variant="ghost" onClick={() => navigate("/organizer/events")}>
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Events
+                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={handleSaveDraft} disabled={isSubmitting}>
+                        Save Draft
                     </Button>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" onClick={handleSaveDraft} disabled={isSubmitting}>
-                            Save Draft
-                        </Button>
-                    </div>
-                </div>
-                <div>
-                    <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                        {isEditMode ? "Edit Event" : "Create Event"}
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {isEditMode ? "Update your event details" : "Fill in the details to create your event"}
-                    </p>
                 </div>
             </div>
+            <div>
+                <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                    {isEditMode ? "Edit Event" : "Create Event"}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                    {isEditMode ? "Update your event details" : "Fill in the details to create your event"}
+                </p>
+            </div>
+            
+            {/* Mode Toggle */}
+            {!isEditMode && (
+                <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                    <Button 
+                        variant={creationMode === 'manual' ? 'default' : 'outline'}
+                        onClick={() => setCreationMode('manual')}
+                        className={cn("rounded-lg flex-1 shadow-sm font-semibold h-12 transition-all", creationMode === 'manual' ? "bg-black text-white hover:bg-gray-800" : "hover:bg-gray-100")}
+                    >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Manual Creation
+                    </Button>
+                    <Button 
+                        variant={creationMode === 'ai' ? 'default' : 'outline'}
+                        onClick={() => setCreationMode('ai')}
+                        className={cn(
+                            "rounded-lg flex-1 shadow-sm font-semibold h-12 transition-all",
+                            creationMode === 'ai' 
+                                ? "bg-black text-white hover:bg-gray-800"
+                                : "hover:bg-gray-100 text-gray-700"
+                        )}
+                    >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        AI Assistant
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+
+    if (creationMode === 'ai') {
+        return (
+            <div className="max-w-5xl mx-auto pb-20">
+                {headerBlock}
+                <Card className="mt-8 overflow-hidden border-gray-200 shadow-sm">
+                    <div className="p-8 text-center space-y-6 bg-white">
+                        <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto border border-gray-100">
+                            <Sparkles className="w-6 h-6 text-black" />
+                        </div>
+                        <h2 className="text-2xl font-bold tracking-tight text-black">
+                            Describe your perfect event
+                        </h2>
+                        <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+                            Just tell me what you're planning, and I'll fill out all the tedious forms, dates, and ticket tiers for you automatically.
+                        </p>
+                        <div className="max-w-2xl mx-auto w-full text-left">
+                            <AdvancedChatInput
+                                textareaProps={{
+                                    value: aiPrompt,
+                                    onChange: (e) => setAiPrompt(e.target.value),
+                                    placeholder: "E.g., We're organizing a pool party next week for 100 people...",
+                                    className: "text-base font-medium resize-none",
+                                    disabled: isParsingAI,
+                                    onKeyDown: (e) => {
+                                        if (e.key === "Enter" && !e.shiftKey) {
+                                            e.preventDefault();
+                                            if (aiPrompt && !isParsingAI) handleProcessAIPrompt();
+                                        }
+                                    },
+                                }}
+                                sendButtonProps={{
+                                    disabled: !aiPrompt || isParsingAI,
+                                    className: isParsingAI ? "bg-gray-100 text-gray-400" : "bg-black hover:bg-gray-800 text-white shadow-sm mx-2"
+                                }}
+                                onSend={handleProcessAIPrompt}
+                                actionIcons={[
+                                    isParsingAI ? (
+                                        <div key="loader" className="flex items-center text-sm font-medium text-black px-3">
+                                            <Loader2 className="w-4 h-4 animate-spin mr-2" /> Generating
+                                        </div>
+                                    ) : null
+                                ]}
+                            />
+                        </div>
+                    </div>
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-5xl mx-auto pb-20">
+            {headerBlock}
 
             {/* Progress Steps */}
             <div className="mb-8">
@@ -535,7 +688,20 @@ export function CreateEventPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="description">Description *</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label htmlFor="description">Description *</Label>
+                                            <Button 
+                                                variant="outline" 
+                                                size="sm" 
+                                                onClick={generateDescriptionAI}
+                                                disabled={isGeneratingAI}
+                                                type="button"
+                                                className="h-8 text-xs bg-white text-black hover:bg-gray-100 border-gray-200 shadow-sm transition-all font-medium rounded-full px-4 cursor-pointer"
+                                            >
+                                                {isGeneratingAI ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
+                                                {isGeneratingAI ? "Generating..." : "Generate with AI"}
+                                            </Button>
+                                        </div>
                                         <Textarea
                                             id="description"
                                             value={description}

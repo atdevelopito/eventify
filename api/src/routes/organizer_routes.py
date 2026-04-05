@@ -27,8 +27,15 @@ def get_organizer_events(current_user):
             tickets_sold = sum(reg.get('quantity', 1) for reg in registrations)
             revenue = sum(reg.get('price', 0) for reg in registrations)
             
-            # Helper to safely serialize ObjectId
-            event_data = {k: str(v) if isinstance(v, ObjectId) else v for k, v in event.items()}
+            # Helper to safely serialize ObjectId and datetime
+            event_data = {}
+            for k, v in event.items():
+                if isinstance(v, ObjectId):
+                    event_data[k] = str(v)
+                elif isinstance(v, datetime):
+                    event_data[k] = v.isoformat()
+                else:
+                    event_data[k] = v
             event_data['id'] = event_id
             if '_id' in event_data:
                 del event_data['_id']
