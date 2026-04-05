@@ -236,7 +236,7 @@ const Dashboard = () => {
               </div>
 
               <div className="flex-1 space-y-1">
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white">
+                <h1 className="text-3xl font-bold text-foreground">
                   Hello, {user?.name || 'User'}
                 </h1>
 
@@ -400,11 +400,17 @@ const Dashboard = () => {
                       >
                         <div className="h-48 overflow-hidden relative grayscale group-hover:grayscale-0 transition-all duration-500">
                           {/* Use getImageUrl helper */}
-                          <img
-                            src={getImageUrl(reg.event.background_image_url) || ''}
-                            alt={reg.event.title}
-                            className="w-full h-full object-cover"
-                          />
+                          {getImageUrl(reg.event.background_image_url) ? (
+                            <img
+                              src={getImageUrl(reg.event.background_image_url)}
+                              alt={reg.event.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-[#1A1A1A] flex items-center justify-center">
+                              <Ticket className="w-12 h-12 text-white opacity-10" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex items-end p-6">
                             <div className="text-white">
                               <h3 className="font-bold text-xl leading-none mb-2">{reg.event.title}</h3>
@@ -500,11 +506,15 @@ const Dashboard = () => {
                           <TableRow key={reg.id} className="opacity-60 hover:opacity-100 transition-opacity">
                             <TableCell>
                               <div className="w-16 h-10 bg-muted rounded overflow-hidden grayscale hover:grayscale-0 transition-all">
-                                <img
-                                  src={getImageUrl(reg.event.background_image_url) || ''}
-                                  alt={reg.event.title}
-                                  className="w-full h-full object-cover"
-                                />
+                                {getImageUrl(reg.event.background_image_url) ? (
+                                  <img
+                                    src={getImageUrl(reg.event.background_image_url)}
+                                    alt={reg.event.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground bg-accent/50 font-bold uppercase">N/A</div>
+                                )}
                               </div>
                             </TableCell>
                             <TableCell className="font-medium">{reg.event.title}</TableCell>

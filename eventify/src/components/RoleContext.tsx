@@ -107,13 +107,31 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         checkAuth();
     };
 
-    const signOut = () => {
+    const signOut = async () => {
+        try {
+            // Hit backend to revoke refresh token cookie
+            await api.post('/auth/logout');
+        } catch (e) {
+            // Logout endpoint may fail if already expired — that's fine
+        }
         localStorage.removeItem('token');
         setUser(null);
         setRole(null);
         setSubscription(null);
         setVerificationStatus('none');
     };
+
+    // Listen for forced logouts from the axios interceptor (refresh failure)
+    useEffect(() => {
+        const handleForcedLogout = () => {
+            setUser(null);
+            setRole(null);
+            setSubscription(null);
+            setVerificationStatus('none');
+        };
+        window.addEventListener('auth:logout', handleForcedLogout);
+        return () => window.removeEventListener('auth:logout', handleForcedLogout);
+    }, []);
 
     const isAdmin = role === 'admin';
     const isPro = subscription?.plan_id === 'pro' || subscription?.plan_id === 'enterprise';

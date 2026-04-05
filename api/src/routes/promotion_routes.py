@@ -1,16 +1,14 @@
 from flask import Blueprint, jsonify, request
 from src.database import mongo
-from src.utils.decorators import token_required
+from src.utils.decorators import token_required, organizer_required
 from bson.objectid import ObjectId
 from datetime import datetime
 
 promotion_bp = Blueprint('promotion_bp', __name__)
 
 @promotion_bp.route('', methods=['GET'])
-@token_required
+@organizer_required
 def get_promotions(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get promotions for events created by this organizer
         # 1. Find all events by organizer
@@ -52,10 +50,8 @@ def get_promotions(current_user):
         return jsonify({"message": "Error fetching promotions"}), 500
 
 @promotion_bp.route('', methods=['POST'])
-@token_required
+@organizer_required
 def create_promotion(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         data = request.json
         
@@ -98,10 +94,8 @@ def create_promotion(current_user):
         return jsonify({"message": "Error creating promotion"}), 500
 
 @promotion_bp.route('/<promo_id>', methods=['PUT'])
-@token_required
+@organizer_required
 def update_promotion(current_user, promo_id):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         data = request.json
         mongo.db.promotions.update_one(

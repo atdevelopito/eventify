@@ -3,18 +3,17 @@ from src.database import mongo
 from src.utils.decorators import token_required
 from bson.objectid import ObjectId
 from datetime import datetime
+from src.utils.performance import cache_api_response, invalidate_cache
 
 event_bp = Blueprint('event_bp', __name__)
 public_bp = Blueprint('public_bp', __name__)
 
 # Handle OPTIONS preflight for event creation
 @event_bp.route('', methods=['OPTIONS'])
-@event_bp.route('/', methods=['OPTIONS'])
 def handle_options():
     return jsonify({}), 200
 
 @event_bp.route('', methods=['POST'], strict_slashes=False)
-@event_bp.route('/', methods=['POST'], strict_slashes=False)
 @token_required
 def create_event(current_user):
     try:
@@ -74,6 +73,9 @@ def create_event(current_user):
 
         result = mongo.db.events.insert_one(new_event)
         
+        # Invalidate event caches
+        invalidate_cache("api_cache:/api/events*")
+        
         return jsonify({
             "message": "Event created successfully",
             "id": str(result.inserted_id),
@@ -125,6 +127,9 @@ def update_event(current_user, event_id):
         {"$set": update_fields}
     )
     
+    # Invalidate event caches
+    invalidate_cache("api_cache:/api/events*")
+    
     return jsonify({"message": "Event updated successfully"}), 200
 
 @event_bp.route('/<event_id>', methods=['GET'])
@@ -161,8 +166,8 @@ def get_event(event_id):
     except:
         return jsonify({"message": "Invalid event ID"}), 400
 
-@event_bp.route('', methods=['GET'], strict_slashes=False)
 @event_bp.route('/', methods=['GET'], strict_slashes=False)
+@cache_api_response(timeout=60, key_prefix='api_cache')
 def get_events():
     # Filter by query params
     # e.g. ?created_by=... to show drafts
@@ -183,10 +188,6 @@ def get_events():
     if is_featured == 'true':
         query['is_featured'] = True
 
-    print(f"Query: {query}")
-    print(f"Database: {mongo.db.name}")
-    print(f"Collection: events")
-    
     cursor = mongo.db.events.find(query)
     
     # Sorting

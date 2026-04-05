@@ -784,6 +784,27 @@ export function CreateEventPage() {
                                             <Label>Quantity</Label>
                                             <Input type="number" min="1" value={ticket.quantity} onChange={(e) => updateTicket(ticket.id, 'quantity', parseInt(e.target.value))} />
                                         </div>
+                                        <div className="space-y-2">
+                                            <Label>Min Per Order</Label>
+                                            <Input type="number" min="1" value={ticket.minPerOrder || 1} onChange={(e) => updateTicket(ticket.id, 'minPerOrder', parseInt(e.target.value))} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Max Per Order</Label>
+                                            <Input type="number" min="1" value={ticket.maxPerOrder || 10} onChange={(e) => updateTicket(ticket.id, 'maxPerOrder', parseInt(e.target.value))} />
+                                        </div>
+                                        <div className="md:col-span-2 space-y-2">
+                                            <Label>Visibility</Label>
+                                            <Select value={ticket.visibility || "public"} onValueChange={(val) => updateTicket(ticket.id, 'visibility', val)}>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Ticket visibility..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="public">Public</SelectItem>
+                                                    <SelectItem value="hidden">Hidden</SelectItem>
+                                                    <SelectItem value="password">Password Protected</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                         <div className="md:col-span-2 space-y-2">
                                             <Label>Description</Label>
                                             <Textarea value={ticket.description} onChange={(e) => updateTicket(ticket.id, 'description', e.target.value)} placeholder="Includes entry + drink ticket..." rows={2} />

@@ -3,8 +3,11 @@ from src.database import mongo
 from src.utils.decorators import token_required
 from bson.objectid import ObjectId
 from datetime import datetime
+from src.tasks.ticket_tasks import generate_tickets_task
+from src.utils.limiter import limiter
 
 registration_bp = Blueprint('registration_bp', __name__)
+
 
 @registration_bp.route('/event/<event_id>', methods=['GET'])
 @token_required
@@ -60,6 +63,7 @@ def get_event_registrations(current_user, event_id):
         return jsonify({"message": "Error fetching registrations"}), 500
 
 @registration_bp.route('', methods=['POST'])
+@limiter.limit("5 per minute")
 def create_registration():
     try:
         data = request.get_json()
@@ -132,11 +136,9 @@ def create_registration():
         result = mongo.db.registrations.insert_one(new_reg)
         registration_id = str(result.inserted_id)
         
-        ticket_ids = []
-        # Auto-generate tickets ONLY if it's free/confirmed immediately
+        # Auto-generate tickets in background ONLY if it's free/confirmed immediately
         if is_free:
-            from src.utils.ticket_utils import generate_tickets_for_registration
-            ticket_ids = generate_tickets_for_registration(
+            generate_tickets_task.delay(
                 registration_id=registration_id,
                 user_id=user_id,
                 event_id=event_id,
@@ -149,7 +151,7 @@ def create_registration():
             "id": registration_id,
             "status": initial_status,
             "payment_status": initial_payment_status,
-            "tickets": ticket_ids
+            "tickets": [] # Tickets generated in background
         }), 201
         
     except Exception as e:
@@ -159,6 +161,7 @@ def create_registration():
         return jsonify({"message": "Error registering"}), 500
 
 @registration_bp.route('/<registration_id>/confirm_payment', methods=['POST'])
+@limiter.limit("10 per minute")
 def confirm_payment(registration_id):
     try:
         # Check for Authentication (Manual/Optional)
@@ -220,9 +223,8 @@ def confirm_payment(registration_id):
             }}
         )
         
-        # 5. Generate Tickets NOW
-        from src.utils.ticket_utils import generate_tickets_for_registration
-        ticket_ids = generate_tickets_for_registration(
+        # 5. Generate Tickets in Background
+        generate_tickets_task.delay(
             registration_id=registration_id,
             user_id=str(reg.get('user_id')),
             event_id=str(reg.get('event_id')),
@@ -231,9 +233,9 @@ def confirm_payment(registration_id):
         )
         
         return jsonify({
-            "message": "Payment confirmed and tickets generated",
+            "message": "Payment confirmed. Tickets are being generated.",
             "status": "confirmed",
-            "tickets": ticket_ids
+            "tickets": [] # Tickets generated in background
         }), 200
 
     except Exception as e:

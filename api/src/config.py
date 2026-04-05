@@ -17,3 +17,11 @@ class Config:
 
     # Flask-Limiter storage
     RATELIMIT_STORAGE_URI = os.getenv('MONGODB_URI')
+
+    # Redis & Celery
+    REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
+    # Optimization for Free Plan (Run tasks synchronously in web thread)
+    CELERY_TASK_ALWAYS_EAGER = os.getenv('CELERY_TASK_ALWAYS_EAGER', 'false').lower() == 'true'

@@ -45,7 +45,25 @@ export const TicketCheckout: React.FC<TicketCheckoutProps> = (props) => {
     const fetchEventTickets = async () => {
         try {
             const { data } = await api.get(`/events/${eventId}`);
-            const eventTickets = data.tickets || [];
+            let eventTickets = data.tickets || [];
+
+            // Map event-level promotions to ticket discounts globally so that
+            // codes generated in the organizer portal work everywhere.
+            const eventPromos = data.promotion_codes || [];
+            if (eventPromos.length > 0) {
+                eventTickets = eventTickets.map((ticket: EventTicket) => ({
+                    ...ticket,
+                    discounts: [
+                        ...(ticket.discounts || []),
+                        ...eventPromos.map((p: any) => ({
+                            code: p.code,
+                            amount: p.amount,
+                            type: p.type === 'percentage' ? 'percent' : 'fixed'
+                        }))
+                    ]
+                }));
+            }
+
             setTickets(eventTickets);
 
             // Initialize quantities

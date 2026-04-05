@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from src.database import mongo
-from src.utils.decorators import token_required
+from src.utils.decorators import token_required, organizer_required
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 import calendar
@@ -8,10 +8,8 @@ import calendar
 organizer_bp = Blueprint('organizer_bp', __name__)
 
 @organizer_bp.route('/events', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_events(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get events created by this organizer
         query = {"$or": [
@@ -48,10 +46,8 @@ def get_organizer_events(current_user):
         return jsonify({"message": "Error fetching events"}), 500
 
 @organizer_bp.route('/tickets', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_tickets(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # 1. Get all events created by this organizer
         # Try both ObjectId and String for robustness
@@ -119,10 +115,8 @@ def get_organizer_tickets(current_user):
         return jsonify({"message": "Error fetching tickets"}), 500
 
 @organizer_bp.route('/transactions', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_transactions(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get organizer's events
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
@@ -155,10 +149,8 @@ def get_organizer_transactions(current_user):
         return jsonify({"message": "Error fetching transactions"}), 500
 
 @organizer_bp.route('/attendees', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_attendees(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get organizer's events
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
@@ -207,10 +199,8 @@ def get_organizer_attendees(current_user):
         return jsonify({"message": "Error fetching attendees"}), 500
 
 @organizer_bp.route('/stats', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_stats(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
         event_ids = [str(e['_id']) for e in events]
@@ -230,10 +220,8 @@ def get_organizer_stats(current_user):
         return jsonify({"message": "Error fetching stats"}), 500
 
 @organizer_bp.route('/dashboard', methods=['GET'])
-@token_required
+@organizer_required
 def get_dashboard_data(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # 1. Fetch all datasets
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
@@ -371,10 +359,8 @@ def get_dashboard_data(current_user):
         return jsonify({"message": f"Error: {str(e)}", "trace": trace}), 500
 
 @organizer_bp.route('/earnings', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_earnings(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get events
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
@@ -421,10 +407,8 @@ def get_organizer_earnings(current_user):
         return jsonify({"message": "Error fetching earnings"}), 500
 
 @organizer_bp.route('/reviews', methods=['GET'])
-@token_required
+@organizer_required
 def get_organizer_reviews(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         # Get events
         events = list(mongo.db.events.find({"created_by": current_user['_id']}))
@@ -456,10 +440,8 @@ def get_organizer_reviews(current_user):
         return jsonify({"message": "Error fetching reviews"}), 500
 
 @organizer_bp.route('/events', methods=['POST'])
-@token_required
+@organizer_required
 def create_event(current_user):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         data = request.json
         
@@ -552,10 +534,8 @@ def create_event(current_user):
 
 
 @organizer_bp.route('/events/<event_id>', methods=['PUT'])
-@token_required
+@organizer_required
 def update_event_details(current_user, event_id):
-    if not current_user.get('is_organizer'):
-        return jsonify({"message": "Organizer access required"}), 403
     try:
         data = request.json
         

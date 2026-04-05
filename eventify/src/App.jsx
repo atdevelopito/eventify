@@ -1,47 +1,60 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Home from '@/pages/Home';
-import Auth from '@/pages/AnimatedAuth';
-import Dashboard from '@/pages/Dashboard';
-import Verify from '@/pages/Verify';
-import Discover from '@/pages/Discover';
-import Activities from '@/pages/Activities';
-import Merch from '@/pages/Merch';
-import Checkout from '@/pages/Checkout';
-import Contact from '@/pages/Contact';
-import CreateEvent from '@/pages/CreateEvent';
-import EditEvent from '@/pages/EditEvent';
-import MyTickets from '@/pages/MyTickets';
-import ToastDemo from '@/pages/ToastDemo';
-import TourDemo from '@/pages/TourDemo';
-import DrawerDemo from '@/components/DrawerDemo';
-import TableDemo from '@/components/TableDemo';
-import AlertDemo from '@/components/AlertDemo';
-import TicketConfirmationDemo from '@/components/TicketConfirmationDemo';
-import NotFound from '@/pages/NotFound';
-import ResetPassword from '@/pages/ResetPassword';
-import OrderSuccess from '@/pages/OrderSuccess';
-import Blog from '@/pages/Blog';
-import Cookies from '@/pages/Cookies';
-import FAQs from '@/pages/FAQs';
-import HelpCenter from '@/pages/HelpCenter';
-import Legal from '@/pages/Legal';
-import Privacy from '@/pages/Privacy';
-import Terms from '@/pages/Terms';
-import AdminDashboard from '@/pages/AdminDashboard';
 
-// import EventDetailPage from '@/components/EventDetailPage'; // It was in components
-// We need to check if EventDetailPage is exported correctly. It was a .tsx file.
-// Assuming it is default export.
-import { EventDetailPage } from '@/components/EventDetailPage';
-import TicketDetail from '@/pages/TicketDetail';
+// Lazy loading for pages
+const Home = lazy(() => import('@/pages/Home'));
+const Auth = lazy(() => import('@/pages/AnimatedAuth'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Verify = lazy(() => import('@/pages/Verify'));
+const Discover = lazy(() => import('@/pages/Discover'));
+const Activities = lazy(() => import('@/pages/Activities'));
+const Merch = lazy(() => import('@/pages/Merch'));
+const Checkout = lazy(() => import('@/pages/Checkout'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const CreateEvent = lazy(() => import('@/pages/CreateEvent'));
+const EditEvent = lazy(() => import('@/pages/EditEvent'));
+const MyTickets = lazy(() => import('@/pages/MyTickets'));
+const ToastDemo = lazy(() => import('@/pages/ToastDemo'));
+const TourDemo = lazy(() => import('@/pages/TourDemo'));
+const DrawerDemo = lazy(() => import('@/components/DrawerDemo'));
+const TableDemo = lazy(() => import('@/components/TableDemo'));
+const AlertDemo = lazy(() => import('@/components/AlertDemo'));
+const TicketConfirmationDemo = lazy(() => import('@/components/TicketConfirmationDemo'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const OrderSuccess = lazy(() => import('@/pages/OrderSuccess'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const Cookies = lazy(() => import('@/pages/Cookies'));
+const FAQs = lazy(() => import('@/pages/FAQs'));
+const HelpCenter = lazy(() => import('@/pages/HelpCenter'));
+const Legal = lazy(() => import('@/pages/Legal'));
+const Privacy = lazy(() => import('@/pages/Privacy'));
+const Terms = lazy(() => import('@/pages/Terms'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
+const TicketDetail = lazy(() => import('@/pages/TicketDetail'));
 
+// components that might be needed immediately
 import { RoleProvider, useRole } from '@/components/RoleContext';
 import { CartProvider } from '@/components/CartContext';
 import { CartDrawer } from '@/components/CartDrawer';
 import Toaster from "@/components/ui/toast"
-import { ProtectedRoute } from '@/components/ProtectedRoute'; // Use the robust component
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PageTransitionLoader } from '@/components/PageTransitionLoader';
+import { EventDetailPage } from '@/components/EventDetailPage';
+
+// Loading Fallback
+const PageLoader = () => (
+  <div className="flex h-screen items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent"></div>
+  </div>
+);
+
+function RedirectToOrganizer() {
+  React.useEffect(() => {
+    window.location.href = import.meta.env.VITE_ORGANIZER_URL || 'http://localhost:5174';
+  }, []);
+  return <div className="flex h-screen items-center justify-center font-bold">Redirecting to Organizer Portal...</div>;
+}
 
 function PrivateRoute({ children }) {
   const { user, loading, isVerified } = useRole();
@@ -104,95 +117,98 @@ function App() {
       <RoleProvider>
         <CartProvider>
           <PageTransitionLoader />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/discover" element={<Discover />} />
-            <Route path="/activities" element={<Activities />} />
-            <Route path="/merch" element={<Merch />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/order-success" element={<OrderSuccess />} />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/activities" element={<Activities />} />
+              <Route path="/merch" element={<Merch />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/order-success" element={<OrderSuccess />} />
 
 
-            {/* Auth Routes */}
-            <Route path="/login" element={<AuthRoute><Auth /></AuthRoute>} />
-            <Route path="/signup" element={<AuthRoute><Auth /></AuthRoute>} />
-            <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
+              {/* Auth Routes */}
+              <Route path="/login" element={<AuthRoute><Auth /></AuthRoute>} />
+              <Route path="/signup" element={<AuthRoute><Auth /></AuthRoute>} />
+              <Route path="/auth" element={<AuthRoute><Auth /></AuthRoute>} />
 
-            <Route path="/verify" element={<Verify />} />
+              <Route path="/verify" element={<Verify />} />
 
-            {/* Admin Dashboard */}
-            <Route path="/admin" element={<AdminDashboard />} />
+              {/* Admin Dashboard */}
+              <Route path="/admin" element={<AdminDashboard />} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/create-event"
-              element={
-                <PrivateRoute>
-                  <CreateEvent />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/edit-event/:id"
-              element={
-                <PrivateRoute>
-                  <EditEvent />
-                </PrivateRoute>
-              }
-            />
+              {/* Protected Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/create-event"
+                element={
+                  <PrivateRoute>
+                    <CreateEvent />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/edit-event/:id"
+                element={
+                  <PrivateRoute>
+                    <EditEvent />
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Event Detail */}
-            {/* Event Detail - Support both plural and singular */}
-            <Route path="/events/:id" element={<EventDetailPage />} />
-            <Route path="/event/:id" element={<EventDetailPage />} />
+              {/* Event Detail */}
+              {/* Event Detail - Support both plural and singular */}
+              <Route path="/events/:id" element={<EventDetailPage />} />
+              <Route path="/event/:id" element={<EventDetailPage />} />
 
-            <Route
-              path="/my-tickets"
-              element={
-                <PrivateRoute>
-                  <MyTickets />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/my-tickets"
+                element={
+                  <PrivateRoute>
+                    <MyTickets />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/ticket/:ticketId"
-              element={
-                <PrivateRoute>
-                  <TicketDetail />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/ticket/:ticketId"
+                element={
+                  <PrivateRoute>
+                    <TicketDetail />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route path="/toast-demo" element={<ToastDemo />} />
-            <Route path="/tour-demo" element={<TourDemo />} />
-            <Route path="/drawer-demo" element={<DrawerDemo />} />
-            <Route path="/table-demo" element={<TableDemo />} />
-            <Route path="/alert-demo" element={<AlertDemo />} />
-            <Route path="/ticket-confirmation-demo" element={<TicketConfirmationDemo />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/toast-demo" element={<ToastDemo />} />
+              <Route path="/tour-demo" element={<TourDemo />} />
+              <Route path="/drawer-demo" element={<DrawerDemo />} />
+              <Route path="/table-demo" element={<TableDemo />} />
+              <Route path="/alert-demo" element={<AlertDemo />} />
+              <Route path="/ticket-confirmation-demo" element={<TicketConfirmationDemo />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
 
 
-            {/* Static Pages */}
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/faqs" element={<FAQs />} />
-            <Route path="/help" element={<HelpCenter />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
+              {/* Static Pages */}
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/faqs" element={<FAQs />} />
+              <Route path="/help" element={<HelpCenter />} />
+              <Route path="/legal" element={<Legal />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="/organizer-landing" element={<RedirectToOrganizer />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
           <CartDrawer />
           <Toaster /> {/* This is the new custom one because we will update the import */}
         </CartProvider>

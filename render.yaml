@@ -1,6 +1,8 @@
 services:
+  # 1. Main API Service
   - type: web
-    name: eventify-backend
+    name: eventify-api
+    plan: free # Change to starter for better perf
     env: python
     rootDirectory: api
     buildCommand: pip install -r requirements.txt
@@ -8,15 +10,55 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
+      - key: FLASK_ENV
+        value: production
       - key: MONGODB_URI
         sync: false
+      - key: REDIS_URL
+        fromService:
+          name: redis-cache
+          type: redis
+          property: connectionString
       - key: JWT_SECRET
-        generateValue: true
-      - key: RESEND_SMTP_HOST
+        sync: false # Set manually in dashboard
+      - key: QR_SECRET
+        sync: false # Set manually in dashboard
+      - key: SENTRY_DSN
         sync: false
+      - key: RESEND_SMTP_HOST
+        value: smtp.resend.com
       - key: RESEND_SMTP_PORT
         value: 465
       - key: RESEND_SMTP_USER
+        value: resend
+      - key: RESEND_SMTP_PASS
+        sync: false
+
+  # 2. Celery Worker (Background Tasks)
+  - type: worker
+    name: eventify-worker
+    plan: free
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A src.celery_app:celery worker --loglevel=info --queues=emails,tickets,default
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: redis-cache
+          type: redis
+          property: connectionString
+      - key: QR_SECRET
         sync: false
       - key: RESEND_SMTP_PASS
         sync: false
+
+# 3. Redis Instance (Cache & Broker)
+databases:
+  - type: redis
+    name: redis-cache
+    plan: free # Change to starter for production persistence
+    ipAllowList: [] # Open to all services in the group

@@ -1,0 +1,54 @@
+version: "2"
+repositories:
+  backend: https://github.com/eventifyfun/eventify-backend
+  frontend: https://github.com/eventifyfun/eventify-frontend
+type: frontend
+tech_stack:
+  - react
+  - vite
+  - tailwindcss
+  - shadcn
+routes:
+  - path: /
+    file: src/pages/Home.jsx
+    auth_required: false
+    description: Home page
+  - path: /discover
+    file: src/pages/Discover.jsx
+    auth_required: false
+    description: Discover events page
+  - path: /login
+    file: src/pages/AnimatedAuth.tsx
+    auth_required: false
+    description: User authentication
+  - path: /dashboard
+    file: src/pages/Dashboard.jsx
+    auth_required: true
+    description: User dashboard
+features:
+  - name: User Login
+    description: Login with credentials
+    files:
+      - src/pages/AnimatedAuth.tsx
+    entry_route: /login
+    user_interactions:
+      - Fill email input field
+      - Fill password input field
+      - Click Login button
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/login
+    auth_required: false
+  - name: Discover Events
+    description: Browse available local events
+    files:
+      - src/pages/Discover.jsx
+    entry_route: /discover
+    user_interactions:
+      - Browse list of events
+      - Click on an event
+    api_calls:
+      - method: GET
+        endpoint: /api/events/
+    auth_required: false
+known_limitations: []

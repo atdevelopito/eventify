@@ -1,22 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.database import mongo
+from src.utils.decorators import admin_required
+from src.tasks.email_tasks import send_organizer_approval_email_task
 
 from bson import ObjectId
 from datetime import datetime
-from src.utils.decorators import token_required
 
 admin_bp = Blueprint('admin', __name__)
-
-# Middleware to check if user is admin
-def admin_required(f):
-    @token_required
-    def decorated_function(current_user, *args, **kwargs):
-        # DEV MODE: Bypass admin check
-        # if current_user.get('role') != 'admin':
-        #    return jsonify({'message': 'Admin privileges required'}), 403
-        return f(current_user, *args, **kwargs)
-    decorated_function.__name__ = f.__name__
-    return decorated_function
 
 @admin_bp.route('/applications', methods=['GET'])
 @admin_required
@@ -83,10 +73,9 @@ def approve_application(current_user, id):
              name = app.get('full_name') or 'Organizer'
              
              if email:
-                from src.services.email_service import EmailService
-                EmailService.send_organizer_approval_email(email, name)
+                send_organizer_approval_email_task.delay(email, name)
         except Exception as e:
-            print(f"Failed to send approval email: {e}")
+            print(f"Failed to queue approval email: {e}")
         
         return jsonify({'message': 'Application approved'}), 200
     except Exception as e:

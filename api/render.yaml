@@ -1,0 +1,42 @@
+services:
+  # 1. Main API Service (Optimized for Free Plan)
+  - type: web
+    name: eventify-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: FLASK_ENV
+        value: production
+      - key: CELERY_TASK_ALWAYS_EAGER
+        value: "true" # Handle emails/QR in simple sync mode for Free Plan
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: redis-cache
+          type: redis
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: QR_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: RESEND_SMTP_HOST
+        value: smtp.resend.com
+      - key: RESEND_SMTP_PORT
+        value: 465
+      - key: RESEND_SMTP_USER
+        value: resend
+      - key: RESEND_SMTP_PASS
+        sync: false
+
+  # 2. Redis Cache
+  - type: redis
+    name: redis-cache
+    plan: free
+    ipAllowList: []

@@ -1,0 +1,188 @@
+[
+  {
+    "id": "TC001",
+    "title": "Log in and reach the dashboard",
+    "description": "Verifies a user can log in with email and password and is redirected to the authenticated dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard content for an authenticated user is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Dashboard is gated behind login",
+    "description": "Verifies an unauthenticated user attempting to access the dashboard is redirected to the login page.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Deep-link to dashboard then log in to reach dashboard",
+    "description": "Verifies a logged-out user who is redirected to login from the dashboard can authenticate and then reach the dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard content for an authenticated user is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Browse events and open an event details view from Discover",
+    "description": "Verifies a visitor can load the discover page, browse the events list, and open an event to view its details.",
+    "category": "Discover Events",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /discover"
+      },
+      {
+        "type": "action",
+        "description": "Wait for events to load"
+      },
+      {
+        "type": "action",
+        "description": "Click an event in the events list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify event details content is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the event details view shows event information"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Navigate from Home to Discover and open event details",
+    "description": "Verifies a visitor can start on the home page, navigate to discover, and open an event to view details.",
+    "category": "Discover Events",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation entry to discover events"
+      },
+      {
+        "type": "action",
+        "description": "Wait for events to load"
+      },
+      {
+        "type": "action",
+        "description": "Click an event in the events list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify event details content is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the event details view shows event information"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Validate email field then log in successfully",
+    "description": "Verifies submitting the login form with a missing or invalid email shows inline validation and that correcting inputs allows successful login to the dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard content for an authenticated user is displayed"
+      }
+    ],
+    "priority": "Medium"
+  }
+]

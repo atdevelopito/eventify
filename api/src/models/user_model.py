@@ -20,6 +20,8 @@ class User:
             "role": "unverified",
             "is_verified": False,
             "is_organizer": False, # Default to False
+            "is_tfa_enabled": False,
+            "tfa_secret": None,
             "verification_token": verification_token,
             "verification_expires_at": datetime.utcnow() + timedelta(days=7),
             "created_at": datetime.utcnow(),

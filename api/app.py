@@ -1,6 +1,10 @@
-
-
-from flask import Flask, request
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+import os
+import uuid
+import logging
+from flask import Flask, request, g, jsonify
+from datetime import datetime
 from src.config import Config
 from src.database import mongo
 from src.routes.auth_routes import auth_bp
@@ -9,23 +13,91 @@ import pymongo
 # print(f"DEBUG: Python: {sys.executable}")
 # print(f"DEBUG: PyMongo: {pymongo.version}")
 
+from flask_talisman import Talisman
 from flask_cors import CORS
 
+# Configure Sentry (Error Tracking)
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.1, # 10% performance tracing
+        profiles_sample_rate=0.1,
+    )
+
+# Centralized Logging Setup
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] [%(request_id)s] %(message)s',
+)
+
 app = Flask(__name__)
+
+# Request ID Middleware (Tracing)
+@app.before_request
+def add_request_id():
+    g.request_id = request.headers.get('X-Request-Id', str(uuid.uuid4()))
+
+# Logger with context awareness
+class RequestAdapter(logging.LoggerAdapter):
+    def process(self, msg, kwargs):
+        return '[%s] %s' % (getattr(g, 'request_id', 'none'), msg), kwargs
+
+# Use app.logger as the main logging interface
+app.logger = RequestAdapter(logging.getLogger('eventify'), {})
+
+@app.route("/api/health")
+def health_check():
+    """Endpoint for uptime monitoring (UptimeRobot, etc.)"""
+    # Check MongoDB Connectivity
+    try:
+        mongo.db.command("ping")
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"unreachable: {str(e)}"
+        
+    return jsonify({
+        "status": "ok",
+        "database": db_status,
+        "environment": os.getenv("FLASK_ENV", "production"),
+        "timestamp": datetime.utcnow().isoformat()
+    }), 200
+
 app.config.from_object(Config)
 
-print("Starting Eventify API...")
-print(f"MongoDB URI present: {bool(app.config.get('MONGO_URI'))}")
+# Security Headers (CSP, HSTS, XSS Protection)
+# Default policy is restrictive; common sources for Eventify are whitelisted.
+csp = {
+    'default-src': '\'self\'',
+    'img-src': ['*', 'data:', 'blob:'],
+    'script-src': ['\'self\'', '\'unsafe-inline\''],
+    'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
+    'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
+    'connect-src': ['\'self\'', 'https://api.eventify.fun', 'http://localhost:5000']
+}
 
-# Initialize CORS with support for frontend origin and credentials
-# Allow all local network IPs and localhost
+talisman = Talisman(
+    app,
+    content_security_policy=csp,
+    force_https=not app.debug, # Enforce HTTPS in production
+    strict_transport_security=True,
+    session_cookie_secure=True,
+    session_cookie_http_only=True
+)
+
+# Initialize Celery
+from src.celery_app import make_celery
+celery = make_celery(app)
+
+# Initialize CORS with explicit origin whitelist (don't use *)
+whitelist = [
+    "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176",
+    "https://eventify.fun", "https://organizer.eventify.fun", "https://admin.eventify.fun",
+    "https://eventifybangladesh.netlify.app", "https://eventify-organizer.netlify.app"
+]
 CORS(app, 
-     origins=[
-         "http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176",
-         "https://eventify.fun", "https://organizer.eventify.fun",
-         r"http://192\.168\.\d{1,3}\.\d{1,3}:\d{4}",  # Wildcard for any local IP/Port
-         r"http://127\.0\.0\.1:\d{4}"
-     ],
+     origins=whitelist,
      supports_credentials=True,
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
      expose_headers=["Content-Type", "Authorization"])
@@ -85,6 +157,9 @@ app.register_blueprint(host_application_bp, url_prefix='/api/host-applications')
 from src.routes.admin_routes import admin_bp
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
+from src.routes.ai_routes import ai_bp
+app.register_blueprint(ai_bp, url_prefix='/api/ai')
+
 
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
@@ -94,43 +169,10 @@ def uploaded_file(filename):
     uploads_dir = os.path.join(os.path.dirname(__file__), 'uploads')
     return send_from_directory(uploads_dir, filename)
 
-@app.before_request
-def log_request_info():
-    print(f"Request: {request.method} {request.path}")
-
 @app.route("/")
 def home():
     return {"status": "ok", "message": "Eventify API is running"}
 
-@app.route("/healthz")
-def healthz():
-    return {"status": "ok"}, 200
-
-@app.route("/debug/db")
-def debug_db():
-    try:
-        db_name = mongo.db.name
-        collections = mongo.db.list_collection_names()
-        event_count = mongo.db.events.count_documents({})
-        featured_count = mongo.db.events.count_documents({"is_featured": True})
-        published_count = mongo.db.events.count_documents({"status": "published"})
-        return {
-            "db_name": db_name,
-            "collections": collections,
-            "event_count": event_count,
-            "featured_count": featured_count,
-            "published_count": published_count,
-            "uri_masked": "present" if app.config.get('MONGO_URI') else "missing"
-        }
-    except Exception as e:
-        return {"error": str(e)}, 500
-
-
-@app.errorhandler(404)
-def handle_404(e):
-    # Log the exact path that failed
-    print(f"404 Error: {request.method} {request.path}")
-    return {"error": "not_found", "path": request.path, "message": "The requested URL was not found on the server."}, 404
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
