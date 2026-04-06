@@ -40,6 +40,9 @@ def register():
     if error:
         return jsonify({'message': error}), 400
 
+    # Dispatch verification email task
+    send_verification_email_task.delay(email, result['verification_token'])
+
     from flask import make_response
     response_data = {
         'message': 'User created successfully. Please verify your email.',
