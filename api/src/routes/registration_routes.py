@@ -214,19 +214,32 @@ def confirm_payment(registration_id):
             }), 200
 
         # 4. Update status to paid/confirmed
+        update_data = {
+            "status": "confirmed",
+            "payment_status": "paid", 
+            "paid_at": datetime.utcnow()
+        }
+
+        # CRITICAL FIX: If we have an authenticated user but reg is guest, re-link it
+        if current_user and str(reg.get('user_id')) == "guest":
+            current_user_id = current_user.get('id') or str(current_user.get('_id', ''))
+            update_data["user_id"] = current_user_id
+            # Also update name/email for records
+            update_data["guest_name"] = current_user.get('name')
+            update_data["guest_email"] = current_user.get('email')
+
         mongo.db.registrations.update_one(
             {"_id": ObjectId(registration_id)},
-            {"$set": {
-                "status": "confirmed",
-                "payment_status": "paid", 
-                "paid_at": datetime.utcnow()
-            }}
+            {"$set": update_data}
         )
         
         # 5. Generate Tickets in Background
+        # Use the NEW user_id if we just fixed it
+        final_user_id = update_data.get("user_id", str(reg.get('user_id')))
+        
         generate_tickets_task.delay(
             registration_id=registration_id,
-            user_id=str(reg.get('user_id')),
+            user_id=final_user_id,
             event_id=str(reg.get('event_id')),
             quantity=reg.get('quantity', 1),
             ticket_type=reg.get('ticket_type', 'General')

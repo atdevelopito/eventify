@@ -389,13 +389,13 @@ def get_organizer_earnings(current_user):
         for event in events:
             eid = str(event['_id'])
             rev = event_revenue.get(eid, 0)
-            if rev > 0: # Only show events with revenue
-                breakdown.append({
-                    "event_id": eid,
-                    "title": event['title'],
-                    "revenue": rev,
-                    "status": "available" # All revenue available for now
-                })
+            
+            breakdown.append({
+                "event_id": eid,
+                "title": event['title'],
+                "revenue": rev,
+                "status": "available" if rev > 0 else "active"
+            })
         
         # Mock payouts for now as we don't have a payout system
         payouts = [] 

@@ -14,7 +14,8 @@ from bson import ObjectId
 
 
 # Dedicated QR signing secret — separate from JWT secret (defense in depth)
-QR_SECRET = (Config.SECRET_KEY + "_qr_tickets").encode('utf-8')
+# Using a derived stable secret to prevent ticket invalidation on minor config changes
+QR_SECRET = (Config.SECRET_KEY[:16] + "_eventify_secure_qr").encode('utf-8')
 
 
 def _base64url_encode(data: bytes) -> str:
@@ -99,6 +100,9 @@ def generate_tickets_for_registration(registration_id, user_id, event_id, quanti
 
     tickets_to_create = quantity - existing_count
 
+    # Final safety: Ensure user_id is a string and not "None"
+    user_id_str = str(user_id) if user_id and user_id != "None" else "guest"
+
     for _ in range(tickets_to_create):
         ticket_id = f"TKT-{secrets.token_hex(8).upper()}"
         nonce = secrets.token_urlsafe(6)
@@ -108,7 +112,7 @@ def generate_tickets_for_registration(registration_id, user_id, event_id, quanti
         qr_payload_dict = {
             "tid": ticket_id,
             "eid": str(event_id),
-            "uid": str(user_id),
+            "uid": user_id_str,
             "iat": int(now.timestamp()),
             "exp": int(qr_expiry.timestamp()),
             "nonce": nonce
@@ -118,7 +122,7 @@ def generate_tickets_for_registration(registration_id, user_id, event_id, quanti
         ticket = {
             "ticket_id": ticket_id,
             "registration_id": str(registration_id),
-            "user_id": str(user_id),
+            "user_id": user_id_str,
             "event_id": str(event_id),
             "qr_token": qr_signed,           # Backwards compat field name
             "qr_payload": qr_signed,          # Canonical signed payload

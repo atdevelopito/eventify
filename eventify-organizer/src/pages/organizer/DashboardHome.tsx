@@ -60,6 +60,17 @@ export function DashboardHome() {
 
         if (!authLoading) {
             fetchDashboardData();
+            
+            // Set up polling interval for "Smooth" updates
+            const interval = setInterval(fetchDashboardData, 10000); // 10 seconds
+            
+            // Refresh on window focus
+            window.addEventListener('focus', fetchDashboardData);
+            
+            return () => {
+                clearInterval(interval);
+                window.removeEventListener('focus', fetchDashboardData);
+            };
         }
     }, [user, authLoading]);
 

@@ -41,6 +41,17 @@ export function EarningsPage() {
 
         if (!authLoading) {
             fetchEarnings();
+            
+            // Set up polling interval for "Smooth" updates
+            const interval = setInterval(fetchEarnings, 10000); // 10 seconds
+            
+            // Refresh on window focus too
+            window.addEventListener('focus', fetchEarnings);
+            
+            return () => {
+                clearInterval(interval);
+                window.removeEventListener('focus', fetchEarnings);
+            };
         }
     }, [user, authLoading]);
 
